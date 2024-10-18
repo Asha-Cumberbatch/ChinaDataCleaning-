@@ -42,20 +42,23 @@ data.rename(columns=column_mapping, inplace=True)
 data['Email'] = data['Email'].str.strip().str.lower()
 
 # Replace the entire email with 'NULL' if it contains 'noemail' or 'nomail'
-data['Email'] = data['Email'].replace(to_replace=r'.*(noemail|nomail|noemial| nomea).*', value='NULL', regex=True)
+data['Email'] = data['Email'].replace(to_replace=r'.*(noemai|nomai|noemia|nomea|noemal|noeami|nomei|noma|noemil|noeai).*', value='NULL', regex=True)
   
 
 # Remove duplicates based on 'ID_Number' or 'Email', keeping the first occurrence
-data.drop_duplicates(subset=['ID_Number', 'Name'], keep='first', inplace=True)
+data.drop_duplicates(subset=['ID_Number', 'VIN', 'Email'], keep='first', inplace=True)
 
 # Merge Address, City, and Province into one column called "Full_Address"
-data['Full_Address'] = data['Address'].fillna('') + ', ' + data['City'].fillna('') + ', ' + data['Province'].fillna('')
+data['Full_Address'] = data['Address'].astype(str).fillna('') + ', ' + \
+                       data['City'].astype(str).fillna('') + ', ' + \
+                       data['Province'].astype(str).fillna('') + ',' + \
+                       data['Postal_Code'].astype(str).fillna('')
 
 # Save the columns to be dropped into a separate DataFrame
-dropped_columns = data[['Province', 'City', 'Address', 'Monthly_Salary', 'Marital_Status', 'Education', 'Color', 'Unnamed: 21']].copy()
+dropped_columns = data[['Postal_Code', 'Province', 'City', 'Address', 'Monthly_Salary', 'Marital_Status', 'Education', 'Color', 'Unnamed: 21', 'Gender', 'Industry', 'Configuration']].copy()
 
 # Drop the specified columns after merging into Full_Address
-columns_to_drop = ['Province', 'City', 'Address', 'Monthly_Salary', 'Marital_Status', 'Education', 'Color', 'Unnamed: 21']
+columns_to_drop = ['Postal_Code', 'Province', 'City', 'Address', 'Monthly_Salary', 'Marital_Status', 'Education', 'Color', 'Unnamed: 21', 'Gender', 'Industry', 'Configuration']
 data.drop(columns=columns_to_drop, inplace=True)
 
 
