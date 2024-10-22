@@ -93,8 +93,8 @@ def clean_data(chunk, dropped_chunk):
     #chunk_cleaned['Phone'] = chunk_cleaned['Phone'].astype(str).str.replace(r'\D', '', regex=True)
 
     # Remove duplicates based on 'ID_Number'
-    chunk_cleaned = chunk_cleaned.drop_duplicates(subset=['ID_Number'], keep='first').reset_index(drop=True)
-    garbage = garbage.drop_duplicates(subset=['ID_Number'], keep='first').reset_index(drop=True)
+    #chunk_cleaned = chunk_cleaned.drop_duplicates(subset=['ID_Number'], keep='first').reset_index(drop=True)
+    #garbage = garbage.drop_duplicates(subset=['ID_Number'], keep='first').reset_index(drop=True)
 
     return chunk_cleaned, garbage
 
