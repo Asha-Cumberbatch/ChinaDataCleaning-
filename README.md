@@ -72,6 +72,20 @@ The script performs the following operations:
 
 10. **Save Outputs**: The cleaned data and garbage data are saved as separate CSV files.
 
+## Garbage Records Overview
+
+### Example Garbage Records
+![garbage_data](garbage_data.jpg) ![garbage](garbage(1).jpg)
+
+
+The above image shows a sample of the records identified as garbage, along with reasons for their exclusion:
+
+- **Invalid Email Format**: Records where email addresses did not conform to standard email formats were marked as garbage. For instance, entries like "user@noemail.com" or emails missing the '@' symbol are excluded.
+  
+- **Consecutive Commas**: Rows containing four or more consecutive commas (indicating missing or incomplete data) are flagged for removal.
+  
+- **Duplicate Entries**: Records identified as duplicates based on VIN, Email, and ID_Number are included in the garbage dataset to ensure the uniqueness of cleaned data.
+
 ## Output
 
 The script generates two CSV files:
@@ -80,11 +94,9 @@ The script generates two CSV files:
 
 ## Conclusion
 
-This script provides a comprehensive approach to cleaning a dataset of car owners by handling missing values, invalid records, and duplicates. The output files can be used for further analysis or processing.
-
+This script provides a comprehensive approach to cleaning a dataset of car owners by handling missing values, invalid records, and duplicates. The output files can be used for further analysis or processing. 
 
 - Modify the email validation logic or other data cleaning operations as necessary.
 
 ## Credits
 - Asha Cumberbatch
-
