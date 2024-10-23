@@ -75,7 +75,7 @@ The script performs the following operations:
 ## Garbage Records Overview
 
 ### Example Garbage Records
-![garbage_data](garbage_data.jpg) ![garbage](garbage(1).jpg)
+![garbage](garbage.jpg) ![garbage1](garbage(1).jpg)
 
 
 The above image shows a sample of the records identified as garbage, along with reasons for their exclusion:
