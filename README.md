@@ -90,7 +90,7 @@ The output of the data cleaning process includes two CSV files:
 
 ## Visualization of Cleaned Data
 
-![Cleaned Data Sample](path/to/your/cleaned_data_sample.png)
+![Cleaned Data Sample](clean.jpg)
 
 *This image shows a sample of the cleaned data, highlighting the structure and fields retained for analysis.*
 
