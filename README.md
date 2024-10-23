@@ -1,102 +1,110 @@
 # Data Cleaning and Processing Script for Car Owner Dataset
 ![datacleaning](datacleaning.jpg)
 
-## Overview
+# Data Cleaning for Car Owners Nationwide
 
-This Python script performs data cleaning on a dataset of car owners in China, originally formatted in Chinese. The script reads the data from a CSV file, translates the column headers to English, and cleans the data by removing invalid records, handling duplicates, and merging relevant address information. The cleaned data and garbage records are then saved to separate CSV files.
+This project involves cleaning a dataset containing information about car owners, specifically focusing on various attributes such as contact information, demographics, and vehicle details. The goal is to prepare the data for further analysis by identifying and removing invalid records while preserving useful information.
 
-## Features
+## Table of Contents
+1. [Project Overview](#project-overview)
+2. [Dataset Description](#dataset-description)
+3. [Code Explanation](#code-explanation)
+4. [Data Cleaning Process](#data-cleaning-process)
+5. [Results](#results)
+6. [Visualization of Cleaned Data](#visualization-of-cleaned-data)
+7. [How to Run the Code](#how-to-run-the-code)
 
-- **Column Translation**: Automatically translates column names from Chinese to English for easier comprehension.
-- **Email Normalization**: Strips whitespace and converts email addresses to lowercase to ensure consistency.
-- **Invalid Email Handling**: Identifies and replaces invalid email formats with 'NULL'.
-- **Consecutive Comma Detection**: Detects rows containing four consecutive commas and marks them for exclusion.
-- **Duplicate Record Identification**: Flags duplicates based on VIN, Email, and ID_Number, ensuring unique records.
-- **Address Merging**: Combines individual address fields (Address, City, Province, Postal_Code) into a single `Full_Address` column for better usability.
-- **Customizable Column Dropping**: Allows for the removal of specified columns after cleaning to streamline the dataset.
-- **Retention of Valid Invalid Emails**: Retains rows with invalid emails if all required fields are present.
-- **Output Generation**: Produces two separate CSV files—one for cleaned data and another for garbage records—along with a summary of the cleaning process.
+## Project Overview
 
-## Requirements
+This repository contains a Python script that utilizes the Pandas library for data manipulation. The script performs the following tasks:
+- Loads the dataset.
+- Maps Chinese column names to English.
+- Cleans and normalizes the data, focusing on email addresses and identifying invalid records.
+- Merges certain columns for better readability.
+- Outputs cleaned and garbage data to separate CSV files.
 
-- Python 3.x
-- pandas
-- numpy
+## Dataset Description
 
-You can install the required libraries using pip:
+The dataset (`CarOwnersNationwide.csv`) includes the following columns (translated to English):
+- **VIN**: Vehicle Identification Number
+- **Name**: Owner's Name
+- **ID_Number**: Identity Number
+- **Gender**: Gender of the owner
+- **Phone**: Phone number
+- **Email**: Email address
+- **Province**: Province of residence
+- **City**: City of residence
+- **Address**: Full address
+- **Postal_Code**: Postal code
+- **Birthday**: Date of birth
+- **Industry**: Industry of employment
+- **Monthly_Salary**: Monthly salary
+- **Marital_Status**: Marital status
+- **Education**: Education level
+- **Brand**: Vehicle brand
+- **Car_Series**: Series of the vehicle
+- **Car_Model**: Model of the vehicle
+- **Configuration**: Configuration details
+- **Color**: Vehicle color
+- **Engine_Number**: Engine number
 
-```bash
-pip install pandas numpy
-```
+## Code Explanation
 
-## File Structure
+The main script performs the following steps:
 
-- `CarOwnersNationwide.csv`: The input CSV file containing car owners' data in Chinese.
-- `merged_cleaned_data.csv`: The output CSV file containing the cleaned data.
-- `merged_garbage_data.csv`: The output CSV file containing records identified as garbage.
-
-## How to Use
-
-1. Ensure the input CSV file (`CarOwnersNationwide.csv`) is located at the specified file path:
-   ```python
-   file_path = 'C:/Users/aaack/OneDrive/Desktop/ProtexxaAI/DataCleaning/CarOwnersNationwide.csv'
-   ```
-
-2. Run the script. It will read the data, perform cleaning operations, and generate two output files:
-   - `merged_cleaned_data.csv`: Contains valid records with unnecessary fields removed.
-   - `merged_garbage_data.csv`: Contains invalid records with reasons for exclusion.
-
-3. The script will print the total number of cleaned rows, total garbage rows, and the ratio of clean rows to garbage rows to the console.
+1. **Import Necessary Libraries**: Utilizes `pandas` for data manipulation and `numpy` for handling numerical operations.
+2. **Suppress Warnings**: Disables FutureWarnings for cleaner output.
+3. **Load Dataset**: Reads the CSV file with `low_memory=False` to avoid data type warnings.
+4. **Rename Columns**: Translates Chinese column names to English for easier handling.
+5. **Normalize Email Addresses**: Strips spaces and converts emails to lowercase.
+6. **Identify Invalid Emails**: Marks emails containing specific keywords as invalid and replaces them with 'NULL'.
+7. **Identify Consecutive Commas**: Flags rows with four consecutive commas.
+8. **Remove Duplicates**: Moves duplicate records based on specific criteria to the garbage DataFrame.
+9. **Merge Address Fields**: Combines address-related fields into a single column.
+10. **Save Cleaned and Garbage Data**: Outputs the cleaned data and garbage records to separate CSV files.
 
 ## Data Cleaning Process
 
-The script performs the following operations:
+### Invalid Email Identification
+Emails containing terms like "noemail" or "nomail" are marked as invalid. The script replaces these entries with 'NULL' for further processing.
 
-1. **Load Data**: The dataset is loaded using `pandas` with `low_memory=False` to prevent DtypeWarnings.
+### Consecutive Commas
+Rows with four consecutive commas in any field are flagged for garbage data, indicating potential issues in record formatting.
 
-2. **Rename Columns**: The columns are renamed from Chinese to English based on a predefined mapping.
+### Duplicate Handling
+Records that are duplicates based on VIN, Email, or ID Number are moved to the garbage DataFrame to ensure a clean dataset.
 
-3. **Email Normalization**: Email addresses are normalized by stripping spaces and converting them to lowercase.
+### Address Combination
+Address components (Address, City, Province, and Postal_Code) are merged into a single column called `Full_Address`, improving data usability.
 
-4. **Invalid Email Handling**: Emails containing specific patterns are replaced with 'NULL', and rows with invalid emails are marked for removal.
+## Results
 
-5. **Consecutive Commas**: Rows with four consecutive commas are identified as garbage records.
+The output of the data cleaning process includes two CSV files:
+- `merged_cleaned_data.csv`: Contains the cleaned data ready for analysis.
+- `merged_garbage_data.csv`: Contains the records identified as garbage with reasons for their exclusion.
 
-6. **Duplicate Records**: Duplicates based on VIN, Email, and ID_Number are identified and marked.
+### Cleaned Data Statistics
+- **Total Cleaned Rows**: (Insert the total cleaned rows here)
+- **Total Garbage Rows**: (Insert the total garbage rows here)
+- **Ratio of Clean to Garbage Rows**: (Insert the ratio here)
 
-7. **Address Merging**: Address-related fields (Address, City, Province, Postal_Code) are combined into a single `Full_Address` column.
+## Visualization of Cleaned Data
 
-8. **Drop Unnecessary Columns**: Specified columns are removed from the cleaned dataset.
+![Cleaned Data Sample](path/to/your/cleaned_data_sample.png)
 
-9. **Invalid Email Retention**: Rows with invalid emails are kept if they contain all required fields.
+*This image shows a sample of the cleaned data, highlighting the structure and fields retained for analysis.*
 
-10. **Save Outputs**: The cleaned data and garbage data are saved as separate CSV files.
+## How to Run the Code
 
-## Garbage Records Overview
-
-### Example Garbage Records
-![garbage](garbage.jpg) ![garbage1](garbage(1).jpg)
-
-
-The above image shows a sample of the records identified as garbage, along with reasons for their exclusion:
-
-- **Invalid Email Format**: Records where email addresses did not conform to standard email formats were marked as garbage. For instance, entries like "user@noemail.com" or emails missing the '@' symbol are excluded.
-  
-- **Consecutive Commas**: Rows containing four or more consecutive commas (indicating missing or incomplete data) are flagged for removal.
-  
-- **Duplicate Entries**: Records identified as duplicates based on VIN, Email, and ID_Number are included in the garbage dataset to ensure the uniqueness of cleaned data.
-
-## Output
-
-The script generates two CSV files:
-- `merged_cleaned_data.csv`: Contains valid records.
-- `merged_garbage_data.csv`: Contains invalid records with a reason for exclusion.
+1. Ensure you have Python installed along with the necessary libraries: `pandas` and `numpy`.
+2. Download the repository or copy the script into your local environment.
+3. Update the `file_path` variable in the script to point to the location of your `CarOwnersNationwide.csv` file.
+4. Run the script to perform the data cleaning process.
+5. The cleaned and garbage data files will be saved in the specified output directory.
 
 ## Conclusion
 
-This script provides a comprehensive approach to cleaning a dataset of car owners by handling missing values, invalid records, and duplicates. The output files can be used for further analysis or processing. 
-
-- Modify the email validation logic or other data cleaning operations as necessary.
+This project successfully demonstrates an effective approach to data cleaning using Python, providing a structured methodology to enhance the quality of datasets for analysis. The resulting cleaned dataset can be further utilized for analytics or machine learning applications.
 
 ## Credits
 - Asha Cumberbatch
