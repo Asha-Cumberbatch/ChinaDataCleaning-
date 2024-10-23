@@ -44,12 +44,8 @@ data['Email'] = data['Email'].str.strip().str.lower()
 # Create a column for garbage reasons, initialized with empty strings
 garbage_reasons = [''] * len(data)
 
-# Replace the entire email with 'NULL' if it contains 'noemail' or similar patterns
-invalid_email_mask = data['Email'].replace(
-    to_replace=r'.*(noemai|nomai|noemia|nomea|noemal|noeami|nomei|noma|noemil|noeai).*', 
-    value='NULL', 
-    regex=True
-) == 'NULL'
+# Replace the entire email with 'NULL' if it contains 'noemail' or 'nomail'
+invalid_email_mask = data['Email'].replace(to_replace=r'.*(noemai|nomai|noemia|nomea|noemal|noeami|nomei|noma|noemil|noeai).*', value='NULL', regex=True) == 'NULL'
 garbage_reasons = np.where(invalid_email_mask, 'Invalid Email', garbage_reasons)
 
 # Identify rows with invalid emails (excluding NULL)
@@ -76,10 +72,7 @@ duplicates['Reason'] = 'Duplicate Record'
 # Combine original garbage DataFrame with duplicates
 garbage = pd.concat([garbage, duplicates], ignore_index=True)
 
-# Drop exact duplicate rows in the garbage DataFrame
-garbage = garbage.drop_duplicates()
-
-# Remove records from the main DataFrame that are in garbage, but keep the valid fields
+# Remove records from the main DataFrame that are in garbage
 data_cleaned = data[~(combined_mask | duplicates_mask)].copy()
 
 # Merge Address, City, and Province into one column called "Full_Address"
@@ -92,19 +85,8 @@ data_cleaned['Full_Address'] = data_cleaned['Address'].astype(str).fillna('') + 
 dropped_columns = data[['Postal_Code', 'Province', 'City', 'Address', 'Monthly_Salary', 'Marital_Status', 'Education', 'Color', 'Unnamed: 21', 'Gender', 'Industry', 'Configuration']].copy()
 
 # Drop the specified columns after merging into Full_Address
-columns_to_drop = ['Postal_Code', 'Province', 'City', 'Address', 'Monthly_Salary', 
-                   'Marital_Status', 'Education', 'Color', 'Unnamed: 21', 
-                   'Gender', 'Industry', 'Configuration']
+columns_to_drop = ['Postal_Code', 'Province', 'City', 'Address', 'Monthly_Salary', 'Marital_Status', 'Education', 'Color', 'Unnamed: 21', 'Gender', 'Industry', 'Configuration']
 data_cleaned.drop(columns=columns_to_drop, inplace=True)
-
-# Keep rows in cleaned data with invalid emails if specific fields are present
-valid_fields_mask = (
-    data_cleaned[['VIN', 'Name', 'ID_Number', 'Phone', 'Birthday', 'Engine_Number', 'Full_Address']].notna().all(axis=1) & 
-    invalid_email_mask
-)
-
-# Add rows with invalid emails that have all required fields
-data_cleaned = pd.concat([data_cleaned, data[valid_fields_mask]], ignore_index=True)
 
 # Specify the full path for saving cleaned and garbage data
 output_dir = 'C:/Users/aaack/OneDrive/Desktop/ProtexxaAI/DataCleaning/'
