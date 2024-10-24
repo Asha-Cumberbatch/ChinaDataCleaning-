@@ -107,7 +107,6 @@ Merged cleaned and garbage files saved successfully.
 
 - Additional validation can be implemented for other fields like phone numbers and addresses.
 - Support for other datasets with different structures.
-- Optimization of the cleaning process for large-scale data.
 
 ## Credits
 - Asha Cumberbatch
