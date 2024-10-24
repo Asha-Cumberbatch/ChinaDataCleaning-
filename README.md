@@ -1,110 +1,113 @@
-# Data Cleaning and Processing Script for Car Owner Dataset
+# README: Data Cleaning for CarOwnersNationwide Dataset
 ![datacleaning](datacleaning.jpg)
 
-# Data Cleaning for Car Owners Nationwide
+## Overview
 
-This project involves cleaning a dataset containing information about car owners, specifically focusing on various attributes such as contact information, demographics, and vehicle details. The goal is to prepare the data for further analysis by identifying and removing invalid records while preserving useful information.
+This project focuses on cleaning a dataset containing car owner information. The dataset includes fields such as VIN, Name, ID Number, Email, and other personal details. The cleaning process involves detecting invalid records, standardizing email addresses, removing duplicates, and handling columns that are unnecessary for analysis. Clean data is saved in one file, while invalid or dropped records are saved in another file for further inspection.
 
-## Table of Contents
-1. [Project Overview](#project-overview)
-2. [Dataset Description](#dataset-description)
-3. [Code Explanation](#code-explanation)
-4. [Data Cleaning Process](#data-cleaning-process)
-5. [Results](#results)
-6. [Visualization of Cleaned Data](#visualization-of-cleaned-data)
-7. [How to Run the Code](#how-to-run-the-code)
+## Files
 
-## Project Overview
+- **`CarOwnersNationwide.csv`**: The raw dataset containing car owner information with Chinese column names.
+- **`merged_cleaned_data.csv`**: The cleaned dataset, which includes only valid records.
+- **`merged_garbage_data.csv`**: The garbage dataset, which includes invalid records, dropped columns, and reasons for exclusion.
 
-This repository contains a Python script that utilizes the Pandas library for data manipulation. The script performs the following tasks:
-- Loads the dataset.
-- Maps Chinese column names to English.
-- Cleans and normalizes the data, focusing on email addresses and identifying invalid records.
-- Merges certain columns for better readability.
-- Outputs cleaned and garbage data to separate CSV files.
+## Key Features of the Code
 
-## Dataset Description
+### 1. **Column Mapping**
+   The code maps the Chinese column names to English for easier handling. The mappings include:
+   - `车架号` → `VIN`
+   - `姓名` → `Name`
+   - `身份证` → `ID_Number`
+   - `性别` → `Gender`
+   - `手机` → `Phone`
+   - `邮箱` → `Email`
+   - ... (and more)
 
-The dataset (`CarOwnersNationwide.csv`) includes the following columns (translated to English):
-- **VIN**: Vehicle Identification Number
-- **Name**: Owner's Name
-- **ID_Number**: Identity Number
-- **Gender**: Gender of the owner
-- **Phone**: Phone number
-- **Email**: Email address
-- **Province**: Province of residence
-- **City**: City of residence
-- **Address**: Full address
-- **Postal_Code**: Postal code
-- **Birthday**: Date of birth
-- **Industry**: Industry of employment
-- **Monthly_Salary**: Monthly salary
-- **Marital_Status**: Marital status
-- **Education**: Education level
-- **Brand**: Vehicle brand
-- **Car_Series**: Series of the vehicle
-- **Car_Model**: Model of the vehicle
-- **Configuration**: Configuration details
-- **Color**: Vehicle color
-- **Engine_Number**: Engine number
+### 2. **Email Normalization and Validation**
+   - **Normalization**: All email addresses are stripped of spaces and converted to lowercase.
+   - **Invalid Emails**: Emails containing phrases like `noemail`, `nomail`, or variations thereof are replaced with `NULL`.
+   - **Garbage Handling**: Records with invalid emails are moved to the garbage file unless key fields (VIN, Name, ID_Number, and Full_Address) are present.
 
-## Code Explanation
+### 3. **Consecutive Commas Detection**
+   Records with four consecutive commas (indicating missing data) are flagged and moved to the garbage file.
 
-The main script performs the following steps:
+### 4. **Duplicate Detection**
+   Duplicates are identified based on combinations of VIN, Email, and ID_Number. All duplicates are moved to the garbage file.
 
-1. **Import Necessary Libraries**: Utilizes `pandas` for data manipulation and `numpy` for handling numerical operations.
-2. **Suppress Warnings**: Disables FutureWarnings for cleaner output.
-3. **Load Dataset**: Reads the CSV file with `low_memory=False` to avoid data type warnings.
-4. **Rename Columns**: Translates Chinese column names to English for easier handling.
-5. **Normalize Email Addresses**: Strips spaces and converts emails to lowercase.
-6. **Identify Invalid Emails**: Marks emails containing specific keywords as invalid and replaces them with 'NULL'.
-7. **Identify Consecutive Commas**: Flags rows with four consecutive commas.
-8. **Remove Duplicates**: Moves duplicate records based on specific criteria to the garbage DataFrame.
-9. **Merge Address Fields**: Combines address-related fields into a single column.
-10. **Save Cleaned and Garbage Data**: Outputs the cleaned data and garbage records to separate CSV files.
+### 5. **Column Merging**
+   - The `Province`, `City`, `Address`, and `Postal_Code` fields are merged into a single `Full_Address` field.
+   - The individual columns (and other irrelevant ones) are dropped from the cleaned data.
 
-## Data Cleaning Process
+### 6. **Dropped Columns**
+   The following columns are removed from the cleaned data and stored in the garbage file for record-keeping:
+   - `Postal_Code`, `Province`, `City`, `Address`
+   - `Monthly_Salary`, `Marital_Status`, `Education`, `Color`
+   - `Gender`, `Industry`, `Configuration`
 
-### Invalid Email Identification
-Emails containing terms like "noemail" or "nomail" are marked as invalid. The script replaces these entries with 'NULL' for further processing.
+### 7. **Garbage Reasons**
+   Every record in the garbage file is accompanied by a reason for its exclusion:
+   - `Invalid Email`: For invalid email addresses.
+   - `Consecutive Commas`: For records containing four consecutive commas.
+   - `Duplicate Record`: For duplicate entries.
+   - `Dropped Column`: For dropped columns.
 
-### Consecutive Commas
-Rows with four consecutive commas in any field are flagged for garbage data, indicating potential issues in record formatting.
+### 8. **Metrics Calculation**
+   - The total number of cleaned rows and garbage rows is calculated.
+   - A ratio of clean to garbage rows is displayed to help gauge the data quality.
 
-### Duplicate Handling
-Records that are duplicates based on VIN, Email, or ID Number are moved to the garbage DataFrame to ensure a clean dataset.
+## Picture of Clean Data
 
-### Address Combination
-Address components (Address, City, Province, and Postal_Code) are merged into a single column called `Full_Address`, improving data usability.
-
-## Results
-
-The output of the data cleaning process includes two CSV files:
-- `merged_cleaned_data.csv`: Contains the cleaned data ready for analysis.
-- `merged_garbage_data.csv`: Contains the records identified as garbage with reasons for their exclusion.
-
-### Cleaned Data Statistics
-- **Total Cleaned Rows**: (Insert the total cleaned rows here)
-- **Total Garbage Rows**: (Insert the total garbage rows here)
-- **Ratio of Clean to Garbage Rows**: (Insert the ratio here)
-
-## Visualization of Cleaned Data
-
+Here’s a sample picture of the clean data after the cleaning process is complete:
 ![Cleaned Data Sample](clean.jpg)
 
-*This image shows a sample of the cleaned data, highlighting the structure and fields retained for analysis.*
+## Installation and Setup
 
-## How to Run the Code
+### Prerequisites
 
-1. Ensure you have Python installed along with the necessary libraries: `pandas` and `numpy`.
-2. Download the repository or copy the script into your local environment.
-3. Update the `file_path` variable in the script to point to the location of your `CarOwnersNationwide.csv` file.
-4. Run the script to perform the data cleaning process.
-5. The cleaned and garbage data files will be saved in the specified output directory.
+- Python 3.x
+- `pandas`
+- `numpy`
+- `os`
+- `warnings`
 
-## Conclusion
+### How to Run
 
-This project successfully demonstrates an effective approach to data cleaning using Python, providing a structured methodology to enhance the quality of datasets for analysis. The resulting cleaned dataset can be further utilized for analytics or machine learning applications.
+1. **Clone or download** the project repository to your local machine.
+2. Install required libraries by running the following command:
+
+   ```bash
+   pip install pandas numpy
+   ```
+
+3. **Place your dataset** (`CarOwnersNationwide.csv`) in the specified directory (`C:/Users/aaack/OneDrive/Desktop/ProtexxaAI/DataCleaning/`).
+4. Run the script, and the cleaned and garbage data will be saved as `merged_cleaned_data.csv` and `merged_garbage_data.csv`.
+
+### Sample Output
+
+After running the code, you will see output like this:
+
+```
+Total cleaned rows: 8000
+Total garbage rows (excluding dropped columns): 2000
+Ratio of clean rows to garbage rows: 4.00
+Merged cleaned and garbage files saved successfully.
+```
+
+## Code Structure
+
+- **Loading Data**: The dataset is loaded using `pandas` with low memory handling for large files.
+- **Column Renaming**: Chinese column names are mapped to English equivalents for easier processing.
+- **Email Cleaning**: Emails are normalized and validated for correctness.
+- **Invalid Records Handling**: Records with missing key fields or invalid data (like consecutive commas) are flagged and moved to the garbage file.
+- **Duplicate Removal**: Duplicate records based on VIN, Email, and ID_Number are removed.
+- **Garbage File**: Invalid records are saved in a separate file with reasons for exclusion.
+- **Cleaned Data**: Valid data is saved in a cleaned file for further use.
+
+## Future Improvements
+
+- Additional validation can be implemented for other fields like phone numbers and addresses.
+- Support for other datasets with different structures.
+- Optimization of the cleaning process for large-scale data.
 
 ## Credits
 - Asha Cumberbatch
