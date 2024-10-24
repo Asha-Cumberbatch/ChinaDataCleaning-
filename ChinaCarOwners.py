@@ -51,14 +51,26 @@ garbage_reasons = np.where(invalid_email_mask, 'Invalid Email', garbage_reasons)
 # Identify rows with invalid emails (excluding NULL)
 valid_email_mask = data['Email'].str.match(r'^[\w\.-]+@[\w\.-]+\.\w+$', na=False)
 invalid_email_mask = ~((data['Email'] == 'NULL') | valid_email_mask)
-garbage_reasons = np.where(invalid_email_mask, 'Invalid Email', garbage_reasons)
+
+# Keep invalid email records if VIN, Name, ID_Number, and Full_Address are present
+required_columns_mask = data[['VIN', 'Name', 'ID_Number']].notnull().all(axis=1)
+data['Full_Address'] = data['Address'].astype(str).fillna('') + ', ' + \
+                       data['City'].astype(str).fillna('') + ', ' + \
+                       data['Province'].astype(str).fillna('') + ', ' + \
+                       data['Postal_Code'].astype(str).fillna('')
+
+full_address_mask = data['Full_Address'].str.strip() != ', , , '
+
+# Records to be moved to garbage due to invalid email, if key fields are missing
+invalid_email_garbage_mask = invalid_email_mask & ~(required_columns_mask & full_address_mask)
+garbage_reasons = np.where(invalid_email_garbage_mask, 'Invalid Email', garbage_reasons)
 
 # Identify rows with four consecutive commas
 consecutive_comma_mask = data.apply(lambda x: ',,,,' in ','.join(x.dropna().astype(str)), axis=1)
 garbage_reasons = np.where(consecutive_comma_mask, 'Consecutive Commas', garbage_reasons)
 
-# Combine invalid email and consecutive comma masks
-combined_mask = invalid_email_mask | consecutive_comma_mask
+# Combine invalid email (for records without required fields) and consecutive comma masks
+combined_mask = invalid_email_garbage_mask | consecutive_comma_mask
 
 # Create garbage DataFrame with reasons
 garbage = data[combined_mask].copy()
@@ -72,32 +84,29 @@ duplicates['Reason'] = 'Duplicate Record'
 # Combine original garbage DataFrame with duplicates
 garbage = pd.concat([garbage, duplicates], ignore_index=True)
 
-# Remove records from the main DataFrame that are in garbage
-data_cleaned = data[~(combined_mask | duplicates_mask)].copy()
-
-# Merge Address, City, and Province into one column called "Full_Address"
-data_cleaned['Full_Address'] = data_cleaned['Address'].astype(str).fillna('') + ', ' + \
-                               data_cleaned['City'].astype(str).fillna('') + ', ' + \
-                               data_cleaned['Province'].astype(str).fillna('') + ',' + \
-                               data_cleaned['Postal_Code'].astype(str).fillna('')
-
-# Save the columns to be dropped into a separate DataFrame
+# Save the columns to be dropped into a separate DataFrame for garbage
 dropped_columns = data[['Postal_Code', 'Province', 'City', 'Address', 'Monthly_Salary', 'Marital_Status', 'Education', 'Color', 'Unnamed: 21', 'Gender', 'Industry', 'Configuration']].copy()
+dropped_columns['Reason'] = 'Dropped Column'
+
+# Append the dropped columns to the garbage DataFrame but exclude them from the final garbage row count
+garbage_with_dropped_columns = pd.concat([garbage, dropped_columns], ignore_index=True)
+
+# Now create the cleaned data by removing garbage rows and duplicates
+data_cleaned = data[~(combined_mask | duplicates_mask)].copy()
 
 # Drop the specified columns after merging into Full_Address
 columns_to_drop = ['Postal_Code', 'Province', 'City', 'Address', 'Monthly_Salary', 'Marital_Status', 'Education', 'Color', 'Unnamed: 21', 'Gender', 'Industry', 'Configuration']
 data_cleaned.drop(columns=columns_to_drop, inplace=True)
 
-# Specify the full path for saving cleaned and garbage data
+# Save cleaned and garbage data to CSV files
 output_dir = 'C:/Users/aaack/OneDrive/Desktop/ProtexxaAI/DataCleaning/'
 
-# Save cleaned and garbage data to CSV files
 data_cleaned.to_csv(f'{output_dir}merged_cleaned_data.csv', index=False, encoding='utf-8-sig')
-garbage.to_csv(f'{output_dir}merged_garbage_data.csv', index=False, encoding='utf-8-sig')
+garbage_with_dropped_columns.to_csv(f'{output_dir}merged_garbage_data.csv', index=False, encoding='utf-8-sig')
 
-# Calculate and display the total cleaned and garbage rows
+# Calculate and display the total cleaned and garbage rows, excluding dropped columns from garbage count
 total_cleaned_rows = len(data_cleaned)
-total_garbage_rows = len(garbage)
+total_garbage_rows = len(garbage)  # Count rows in the garbage DataFrame before appending dropped columns
 
 # Calculate and display the ratio of clean to garbage rows
 if total_garbage_rows > 0:
@@ -106,7 +115,7 @@ else:
     ratio = float('inf')  # Avoid division by zero
 
 print(f"Total cleaned rows: {total_cleaned_rows}")
-print(f"Total garbage rows: {total_garbage_rows}")
+print(f"Total garbage rows (excluding dropped columns): {total_garbage_rows}")
 print(f"Ratio of clean rows to garbage rows: {ratio:.2f}")
 
 print("Merged cleaned and garbage files saved successfully.")
